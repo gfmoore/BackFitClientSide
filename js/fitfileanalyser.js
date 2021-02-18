@@ -20,9 +20,7 @@ $(function() {
   console.log('jQuery here!');  //just to make sure everything is working
 
   //#region for variable definitions (just allows code folding)
-  let fname;
-  let response;
-  let content;
+  let reader = new FileReader();
 
   const fitParser = new FitParser({
     force: true,
@@ -34,35 +32,24 @@ $(function() {
   });
   //#endregion 
 
-  //Testing
-  fname = './data/Karoo.fit';
-  //fname = './data/example.fit'; //doesn't seem to work
-  //fname = './data/Activity.fit';
-  //getdata();
-
   //select and load fit file
   $('#selectfitfile').on('change', function(e) { 
-    fname = e.target.files[0].name;
-    //getdata();
-  })
 
-  //I'm learning how to use async, await and fetch. 
-  async function getdata() {
-    response = await fetch(fname);
-
-    //get the fit file as an arraybuffer  - this is where I had to make a slight change in the bf-fit-parser code
-    content = await response.arrayBuffer();
-
-    //Now use the parser
-    fitParser.parse(content, function (error, data) {
-      if (error) {
+    reader.readAsArrayBuffer( e.target.files[0] );
+    
+    reader.onload = function(ev) {
+      fitParser.parse(reader.result, function (error, data) {
+        if (error) {
           console.error(error);
-      } else {
+        } 
+        else {
           //Here is the data as a JavaScript object. You can JSONify it or access the member as you need.
           console.log(data);
-      }
-    });
-  }
+        }
+      });
+    }
+
+  })
 
 })
 
